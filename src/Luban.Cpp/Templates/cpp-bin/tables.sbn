@@ -7,14 +7,14 @@ class {{__name}}
 {
 public:
     {{__name}}();
-    
-    ::luban::HashMap<::luban::int32, ::luban::UniquePtr<::luban::TableBase>> tables;
+    ~{{__name}}() = default;
 
     bool load(::luban::Loader<::luban::ByteBuf> loader);
     
     template <typename T>
     T& GetTable();
-    
+private:
+    ::luban::Vector<::luban::UniquePtr<::luban::TableBase>> tables;
 };
 
 template <typename T>

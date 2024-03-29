@@ -1,6 +1,6 @@
 ﻿{{get_beans_includes __export_fields}}
 {{if __parent_def_type}}
-#include "{{__parent_def_type.full_name}}.h"
+#include "bean_{{__parent_def_type.full_name}}.h"
 {{end}}
 {{namespace_with_grace_begin __namespace_with_top_module}}
 {{~if __this.comment != '' ~}}
@@ -11,32 +11,14 @@
 struct {{__name}} : public{{if __parent_def_type}} {{make_cpp_name __parent_def_type.full_name}} {{else}} luban::CfgBean {{end}}
 {
     {{~if __this.is_abstract_type~}}
-    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, ::luban::SharedPtr<{{__name}}>& _out);
+    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, {{__name}}*& _out);
     {{~else~}}
-    
-    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, {{__name}}& _out)
-    {
-        return _out.deserialize(_buf);
-    }
+    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, {{__name}}& _out);
     {{~end~}}
 
-    virtual ~{{__name}}() {} 
+    virtual ~{{__name}}();
 
-    bool deserialize(::luban::ByteBuf& _buf) override
-    {
-        {{~if __this.parent_def_type~}}
-        if (!{{make_cpp_name __this.parent_def_type.full_name}}::deserialize(_buf))
-        {
-            return false;
-        }
-        {{~end~}}
-    
-        {{~ for field in __this.export_fields ~}}
-        {{deserialize '_buf' (format_field_name __code_style field.name) field.ctype}}
-        {{~end~}}
-    
-        return true;
-    }
+    bool deserialize(::luban::ByteBuf& _buf) override; 
 
     {{~ for field in __export_fields ~}}
 {{~if field.comment != '' ~}}

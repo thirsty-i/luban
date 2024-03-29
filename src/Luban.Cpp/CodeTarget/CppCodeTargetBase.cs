@@ -68,9 +68,9 @@ public abstract class CppCodeTargetBase : TemplateCodeTargetBase
         writer.Write(template.Render(tplCtx));
     }
     
-    private void GenerateAbstractBeanDeserialize(GenerationContext ctx, List<DefBean> beans, CodeWriter writer)
+    private void GenerateBeanCpp(GenerationContext ctx, List<DefBean> beans, CodeWriter writer)
     {
-        var template = GetTemplate("abstract_bean_deserialize");
+        var template = GetTemplate("bean_cpp");
         var tplCtx = CreateTemplateContext(template);
         var extraEnvs = new ScriptObject
         {
@@ -116,18 +116,18 @@ public abstract class CppCodeTargetBase : TemplateCodeTargetBase
                     writer.Write("#include \"CfgBean.h\"");
                 
                     base.GenerateBean(ctx, @bean, writer);
-                    return new OutputFile() { File = $"{TypeUtil.ToSnakeCase(bean.FullName)}.h", Content = writer.ToResult(FileHeader) };
+                    return new OutputFile() { File = $"bean_{TypeUtil.ToSnakeCase(bean.FullName)}.h", Content = writer.ToResult(FileHeader) };
                 }));
             }
         }
 
-        // abstract bean deserialize
+        // beans cpp
         {
             tasks.Add(Task.Run(() =>
             {
                 var writer = new CodeWriter();
-                GenerateAbstractBeanDeserialize(ctx, ctx.ExportBeans, writer);
-                return new OutputFile() { File = $"abstract_bean_deserialize.cpp", Content = writer.ToResult(FileHeader) };
+                GenerateBeanCpp(ctx, ctx.ExportBeans, writer);
+                return new OutputFile() { File = $"beans.cpp", Content = writer.ToResult(FileHeader) };
             }));
         }
 

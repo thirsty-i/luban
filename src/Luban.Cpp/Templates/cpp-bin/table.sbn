@@ -1,4 +1,4 @@
-#include "{{to_snake_case __this.value_type}}.h"
+#include "bean_{{to_snake_case __this.value_type}}.h"
 #include "TableBase.h"
 {{~if __this.is_list_table && __this.is_union_index~}}
 #include "Hasher.h"
@@ -40,7 +40,7 @@ public:
         int n;
         if (!_buf.readSize(n)) return false;
         _dataList.resize(n);
-        _dataMap.rehash(n);
+        _dataMap.reserve(n);
         for(int i = 0; i < n ; ++i)
         {
             {{declaring_type_name __value_type}}& _v = _dataList[i];
@@ -79,9 +79,11 @@ public:
         _dataList.resize(n);
         {{~if __this.multi_key
             for idx in __this.index_list~}}
-        _dataMap_{{idx.index_field.name}}.rehash(n);
+        _dataMap_{{idx.index_field.name}}.reserve(n);
             {{~end
-        end~}}
+        else if __this.is_union_index~}}
+        _dataMap.reserve(n);
+        {{~end~}}
         for(int i = 0; i < n ; ++i)
         {
             {{declaring_type_name __value_type}}& _v = _dataList[i];
@@ -153,7 +155,7 @@ public:
     
 public:
     static constexpr const char* __OUTPUT_FILE_NAME__ = "{{__this.output_data_file}}";
-    static constexpr ::luban::int32 __ID__ = {{get_id_by_full_name __this.full_name}};
+    static const ::luban::int32 __ID__;
    
     const char* getOutputDataFile() const override { return __OUTPUT_FILE_NAME__; }
     int getTypeId() const override { return __ID__; }

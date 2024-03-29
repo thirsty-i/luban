@@ -1,5 +1,6 @@
 using Luban.Types;
 using Luban.TypeVisitors;
+using Luban.Cpp.TemplateExtensions;
 
 namespace Luban.Cpp.TypeVisitors;
 
@@ -10,8 +11,16 @@ public class DeclaringTypeNameVisitor : DecoratorFuncVisitor<string>
     public override string DoAccept(TType type)
     {
         if (type.IsNullable)
-            return $"::luban::SharedPtr<{type.Apply(CppSmartPtrUnderlyingDeclaringTypeNameVisitor.Ins)}>";
+            return $"{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}*";
         
-        return type.Apply(CppSmartPtrUnderlyingDeclaringTypeNameVisitor.Ins);
+        return type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins);
+    }
+
+    public override string Accept(TBean type)
+    {
+        if (type.IsDynamic)
+            return $"{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}*";
+        
+        return type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins);
     }
 }

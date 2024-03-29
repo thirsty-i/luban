@@ -3,12 +3,16 @@
 {{~end~}}
 
 {{namespace_with_grace_begin __namespace}}
+{{x = 0}}
+{{~for table in __tables~}}
+const ::luban::int32 {{make_cpp_name table.full_name}}::__ID__ = {{x++}};
+{{~end~}}
 
 {{__name}}::{{__name}}()
-    : tables({{__tables_count}})
 {
+    tables.reserve({{__tables_count}});
 {{~for table in __tables~}}
-    tables[{{make_cpp_name table.full_name}}::__ID__] = std::make_unique<{{make_cpp_name table.full_name}}>();
+    tables.emplace_back(new {{make_cpp_name table.full_name}}());
 {{~end~}}
 }
 
@@ -16,11 +20,11 @@ bool {{__name}}::load(::luban::Loader<::luban::ByteBuf> loader)
 {
     ::luban::ByteBuf buf;
     
-    for (auto& pair : tables)
+    for (auto& table : tables)
     {
         buf.clear();
-        if (!loader(buf, pair.second->getOutputDataFile())) return false;
-        if (!pair.second->load(buf)) return false;
+        if (!loader(buf, table->getOutputDataFile())) return false;
+        if (!table->load(buf)) return false;
     }
 
     return true;

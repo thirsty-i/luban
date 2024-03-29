@@ -58,12 +58,14 @@ public class CppTemplateExtension : ScriptObject
             if (field.CType.IsBean == false)
                 continue;
                 
-            if (includes.Contains(field.Type))
+            TBean bean = field.CType as TBean;
+            
+            if (includes.Contains(bean.DefBean.FullName))
                 continue;
-
-            includes.Add(field.Type);
+            
+            includes.Add(bean.DefBean.FullName);
         }
-        return string.Join("\n", includes.Select(item => $"#include \"{TypeUtil.ToSnakeCase(item)}.h\""));
+        return string.Join("\n", includes.Select(item => $"#include \"bean_{TypeUtil.ToSnakeCase(item)}.h\""));
     }
 
 
@@ -75,5 +77,12 @@ public class CppTemplateExtension : ScriptObject
     public static int GetIdByFullName(string fullName)
     {
         return TypeUtil.ComputeCfgHashIdByName(fullName);
+    }
+
+    public static bool IsAbstractType(TType type)
+    {
+        TBean bean = type as TBean;
+        
+        return bean != null && bean.DefBean.IsAbstractType;
     }
 }
