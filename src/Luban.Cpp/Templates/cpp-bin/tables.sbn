@@ -20,7 +20,7 @@ private:
 template <typename T>
 T& {{__name}}::GetTable()
 {
-    static_assert(std::is_base_of<::luban::TableBase, T>::value, "T must be a base of TableBase");
+    static_assert(std::is_base_of_v<::luban::TableBase, T>, "T must be a base of TableBase");
     return static_cast<T&>(*(tables[T::__ID__]));
 }
 

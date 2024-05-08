@@ -11,7 +11,7 @@ public class DeclaringTypeNameVisitor : DecoratorFuncVisitor<string>
     public override string DoAccept(TType type)
     {
         if (type.IsNullable)
-            return $"{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}*";
+            return $"::luban::UniquePtr<{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}>";
         
         return type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins);
     }
@@ -19,7 +19,7 @@ public class DeclaringTypeNameVisitor : DecoratorFuncVisitor<string>
     public override string Accept(TBean type)
     {
         if (type.IsDynamic)
-            return $"{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}*";
+            return $"::luban::UniquePtr<{type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins)}>";
         
         return type.Apply(CppUnderlyingDeclaringTypeNameVisitor.Ins);
     }

@@ -11,7 +11,7 @@
 struct {{__name}} : public{{if __parent_def_type}} {{make_cpp_name __parent_def_type.full_name}} {{else}} luban::CfgBean {{end}}
 {
     {{~if __this.is_abstract_type~}}
-    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, {{__name}}*& _out);
+    static bool deserialize{{__name}}(::luban::ByteBuf& _buf, ::luban::UniquePtr<{{__name}}>& _out);
     {{~else~}}
     static bool deserialize{{__name}}(::luban::ByteBuf& _buf, {{__name}}& _out);
     {{~end~}}
